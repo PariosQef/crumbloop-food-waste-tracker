@@ -70,16 +70,15 @@ const Users = () => {
     }
 
     if (formData.password.length < 8) {
-      setError(
-        "Password must be at least 8 characters."
-      );
+      setError("Password must be at least 8 characters.");
       return;
     }
 
     try {
       setSubmitting(true);
 
-      await api.post("/auth/register", {
+      // Use protected ADMIN user endpoint
+      await api.post("/users", {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -101,6 +100,42 @@ const Users = () => {
       );
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleUserStatusChange = async (user) => {
+    const newStatus = !user.active;
+
+    const action = newStatus
+      ? "reactivate"
+      : "deactivate";
+
+    const confirmed = window.confirm(
+      `Are you sure you want to ${action} ${user.name}?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setError("");
+      setSuccess("");
+
+      await api.patch(`/users/${user._id}/status`, {
+        active: newStatus
+      });
+
+      setSuccess(
+        `${user.name} was ${
+          newStatus ? "reactivated" : "deactivated"
+        } successfully.`
+      );
+
+      await loadUsers();
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          `Unable to ${action} user.`
+      );
     }
   };
 
@@ -213,7 +248,6 @@ const Users = () => {
                   placeholder="e.g. Alex Smith"
                   value={formData.name}
                   onChange={handleChange}
-                  autoComplete="name"
                   required
                 />
               </div>
@@ -230,7 +264,6 @@ const Users = () => {
                   placeholder="alex@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  autoComplete="email"
                   required
                 />
               </div>
@@ -250,14 +283,8 @@ const Users = () => {
                   placeholder="Minimum 8 characters"
                   value={formData.password}
                   onChange={handleChange}
-                  autoComplete="new-password"
                   required
                 />
-
-                <small>
-                  Passwords are hashed by the backend
-                  before being stored.
-                </small>
               </div>
 
               <div className="form-field">
@@ -284,29 +311,6 @@ const Users = () => {
                     Administrator
                   </option>
                 </select>
-              </div>
-            </div>
-
-            <div className="role-explanation-grid">
-              <div>
-                <strong>Kitchen Staff</strong>
-                <span>
-                  Record waste and edible surplus.
-                </span>
-              </div>
-
-              <div>
-                <strong>Management</strong>
-                <span>
-                  Review waste, surplus and analytics.
-                </span>
-              </div>
-
-              <div>
-                <strong>Administrator</strong>
-                <span>
-                  Full system and configuration access.
-                </span>
               </div>
             </div>
 
@@ -388,6 +392,7 @@ const Users = () => {
                   <th>Role</th>
                   <th>Status</th>
                   <th>Created</th>
+                  <th>Action</th>
                 </tr>
               </thead>
 
@@ -436,6 +441,24 @@ const Users = () => {
                             user.createdAt
                           ).toLocaleDateString()
                         : "—"}
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className={
+                          user.active
+                            ? "user-status-button deactivate"
+                            : "user-status-button reactivate"
+                        }
+                        onClick={() =>
+                          handleUserStatusChange(user)
+                        }
+                      >
+                        {user.active
+                          ? "Deactivate"
+                          : "Reactivate"}
+                      </button>
                     </td>
                   </tr>
                 ))}

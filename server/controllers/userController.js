@@ -84,7 +84,56 @@ const getUsers = async (req, res) => {
   }
 };
 
+const updateUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { active } = req.body;
+
+    if (typeof active !== "boolean") {
+      return res.status(400).json({
+        message: "Active status must be true or false"
+      });
+    }
+
+    if (req.user._id.toString() === id && active === false) {
+      return res.status(400).json({
+        message: "You cannot deactivate your own admin account"
+      });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    user.active = active;
+
+    await user.save();
+
+    res.status(200).json({
+      message: active
+        ? "User reactivated successfully"
+        : "User deactivated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        active: user.active
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Unable to update user status"
+    });
+  }
+};
+
 module.exports = {
   createUser,
-  getUsers
+  getUsers,
+  updateUserStatus
 };

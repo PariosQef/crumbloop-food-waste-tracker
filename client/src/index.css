@@ -1814,3 +1814,33 @@ input {
     width: 100%;
   }
 }
+
+.user-status-button {
+  padding: 7px 12px;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.user-status-button.deactivate {
+  background: #fff;
+  color: #b42318;
+  border: 1px solid #f1b5ae;
+}
+
+.user-status-button.deactivate:hover {
+  background: #fff3f2;
+}
+
+.user-status-button.reactivate {
+  background: #edf8f2;
+  color: #127a4a;
+  border: 1px solid #a7d8bf;
+}
+
+.user-status-button.reactivate:hover {
+  background: #dff2e8;
+}

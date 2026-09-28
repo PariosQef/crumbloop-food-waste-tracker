@@ -2,7 +2,8 @@ const express = require("express");
 
 const {
   createUser,
-  getUsers
+  getUsers,
+  updateUserStatus
 } = require("../controllers/userController");
 
 const {
@@ -12,6 +13,13 @@ const {
 
 const router = express.Router();
 
+router.get(
+  "/",
+  protect,
+  authorize("ADMIN"),
+  getUsers
+);
+
 router.post(
   "/",
   protect,
@@ -19,11 +27,11 @@ router.post(
   createUser
 );
 
-router.get(
-  "/",
+router.patch(
+  "/:id/status",
   protect,
   authorize("ADMIN"),
-  getUsers
+  updateUserStatus
 );
 
 module.exports = router;
