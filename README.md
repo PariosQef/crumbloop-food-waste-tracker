@@ -89,10 +89,29 @@ crumbloop/
 
 Installation
 
-Clone the repository:
+The project can be obtained either by cloning the Git repository or by extracting a submitted zip file. Both methods result in the same folder structure and the setup steps below are identical afterwards.
+
+Option A: Clone the repository
 
 git clone https://github.com/PariosQef/crumbloop-food-waste-tracker.git
 cd crumbloop-food-waste-tracker
+
+Option B: Extract from a zip file
+
+Extract the submitted crumbloop.zip archive to a location of your choice, then open a terminal in the extracted folder (the one containing client/, server/ and this README.md).
+
+Windows: right-click the zip file and choose "Extract All...", then open the extracted folder and open a terminal there (Shift + right-click → "Open PowerShell window here" or "Open in Terminal").
+
+macOS: double-click the zip file to extract it (or run unzip crumbloop.zip in Terminal), then cd into the extracted folder.
+
+Linux: unzip crumbloop.zip && cd crumbloop
+
+Prerequisites (both options)
+
+Node.js (v18 or later recommended)
+npm (installed with Node.js)
+A MongoDB connection string (a local MongoDB instance or a free MongoDB Atlas cluster)
+
 Backend setup
 cd server
 npm install
@@ -105,13 +124,16 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 PORT=5050
 
-Start the backend:
+Start the backend using one of the following:
 
 npm run dev
 
-or, depending on the configured scripts:
+Runs the server with nodemon (auto-restarts on file changes). Recommended for development.
 
-node server.js
+npm start
+
+Runs the server directly with node server.js. Recommended when just running the app without editing code (e.g. from an extracted zip submission).
+
 Frontend setup
 
 Open another terminal:
@@ -127,6 +149,17 @@ http://localhost:5173
 The backend will normally run on:
 
 http://localhost:5050
+
+Alternative: running a production build of the frontend
+
+Instead of the Vite dev server, the frontend can also be built and previewed as a static production bundle:
+
+cd client
+npm install
+npm run build
+npm run preview
+
+This serves the optimized production build, useful for a final check that the app runs correctly outside of the development environment.
 Main Application Areas
 Dashboard
 Log Waste
